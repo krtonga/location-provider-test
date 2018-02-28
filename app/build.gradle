@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'io.fabric'
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -38,8 +40,11 @@ dependencies {
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:support-vector-drawable:26.1.0'
 
-    // logging
+    // logging & analytics
     implementation "com.jakewharton.timber:timber:4.6.0"
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+        transitive = true
+    }
 
     // rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
@@ -50,9 +55,6 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:5.4.1'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
-
-//    implementation 'com.patloew.rxlocation:rxlocation:1.0.4' // Fused GooglePlay
-//    implementation 'com.github.zellius:rxlocationmanager:1.0.0' // LocationManager
 
 
     testImplementation 'junit:junit:4.12'
