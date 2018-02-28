@@ -4,7 +4,7 @@ This app allows someone to both better understand how location services work, by
 
 This is a screenshot taken when walking a block in NYC, showing that network provided points (the purple markers) are most accurate. 
 
-![screenshot-of-block-to-rc-taken-during-app-development](https://raw.githubusercontent.com/krtonga/location-provider-test/master/block-to-rc.png)
+![screenshot-of-block-to-rc-taken-during-app-development](https://raw.githubusercontent.com/krtonga/location-provider-test/master/block-to-rc-and-settings.png)
 
 However this is not always the case.
 
