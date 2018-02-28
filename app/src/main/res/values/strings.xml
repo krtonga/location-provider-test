@@ -1,0 +1,76 @@
+<resources>
+    <string name="app_name">location-provider-test</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Settings for Location Providers -->
+    <string name="pref_header_location">Location Providers</string>
+    <string name="pref_header_mapbox">Mapbox</string>
+
+    <string name="pref_key_gps_only">gps_switch</string>
+    <string name="pref_title_gps_only">GPS Only</string>
+    <string name="pref_description_gps_only">Comes from Satellites. Slower to get first fix. Usually less accurate indoors or among skyscrapers.</string>
+
+    <string name="pref_key_network_only">network_switch</string>
+    <string name="pref_title_network_only">Network Only</string>
+    <string name="pref_description_network_only">Comes from Cell Towers and WiFi Networks. Uses strength of signal. Better where there are many known WiFi points.</string>
+
+    <string name="pref_key_passive_only">passive_switch</string>
+    <string name="pref_title_passive_only">Passive Only</string>
+    <string name="pref_description_passive_only">When other apps request GPS, you can piggyback on their work! Great for low battery use.</string>
+
+    <string name="pref_key_fused">fused_switch</string>
+    <string name="pref_title_fused">Fused Location Provider</string>
+    <string name="pref_description_fused">Google Play provides what they think is the optimized point, using all providers and some math.</string>
+
+    <string name="pref_key_fused_priority">fused_priority_list</string>
+    <string name="pref_title_fused_priority">Fused Location Priority</string>
+    <string-array name="pref_fused_priority_titles">
+        <item>High Accuracy</item>
+        <item>Balanced Power Accuracy</item>
+        <item>Low Power</item>
+        <item>No Power</item>
+    </string-array>
+    <string-array name="pref_fused_priority_values">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string name="pref_view_providers">VIEW SELECTED PROVIDERS</string>
+    <string name="pref_key_view_providers">view_providers_pref</string>
+
+    <!-- Settings for Location Update Interval -->
+    <string name="pref_key_interval_catg">interval_catg</string>
+    <string name="pref_interval_catg">Update Interval (in seconds)</string>
+
+    <string name="pref_key_interval">interval_switch</string>
+    <string name="pref_title_interval">GPS/Network/Passive Interval</string>
+    <string name="pref_interval_default">0</string>
+
+    <string name="pref_key_fused_interval">fused_interval_switch</string>
+    <string name="pref_title_fused_interval">Fused Provider Interval</string>
+    <string name="pref_interval_fused_default">5</string>
+
+    <!-- Settings for Mapbox Styles -->
+    <string name="pref_key_mapbox_style">mapbox_style_list</string>
+    <string name="pref_title_mapbox_style">Mapbox Style</string>
+    <string-array name="pref_mapbox_style_titles">
+        <item>Dark</item>
+        <item>Light</item>
+        <item>Streets</item>
+        <item>Outdoors</item>
+        <item>Satellite</item>
+        <item>Satellite Streets</item>
+    </string-array>
+    <string-array name="pref_mapbox_style_values">
+        <item>mapbox://styles/mapbox/dark-v9</item>
+        <item>mapbox://styles/mapbox/light-v9</item>
+        <item>mapbox://styles/mapbox/streets-v10</item>
+        <item>mapbox://styles/mapbox/outdoors-v10</item>
+        <item>mapbox://styles/mapbox/satellite-v9</item>
+        <item>mapbox://styles/mapbox/satellite-streets-v10</item>
+    </string-array>
+</resources>

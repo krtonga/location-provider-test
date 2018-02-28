@@ -1,0 +1,15 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="krtonga.github.io.location_provider_test.settings.SettingsActivity$MapboxPreferenceFragment"
+        android:icon="@drawable/ic_mapbox_icon"
+        android:title="@string/pref_header_mapbox" />
+
+    <header
+        android:fragment="krtonga.github.io.location_provider_test.settings.SettingsActivity$LocationPreferenceFragment"
+        android:icon="@drawable/ic_my_location_black_24dp"
+        android:title="@string/pref_header_location" />
+
+</preference-headers>

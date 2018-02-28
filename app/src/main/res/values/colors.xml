@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2e3143</color>
+    <color name="colorPrimaryDark">#1f212b</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="error">#a31313</color>
+
+    <color name="gps">#4054a9</color>
+    <color name="network">#d651df</color>
+    <color name="passive">#FFFF9000</color>
+    <color name="fused">#2b9f50</color>
+</resources>

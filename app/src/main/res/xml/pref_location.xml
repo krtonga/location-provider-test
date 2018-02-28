@@ -1,0 +1,71 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="interval_category"
+        android:title="Location Providers">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_gps_only"
+            android:summary="@string/pref_description_gps_only"
+            android:title="@string/pref_title_gps_only" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_network_only"
+            android:summary="@string/pref_description_network_only"
+            android:title="@string/pref_title_network_only" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_passive_only"
+            android:summary="@string/pref_description_passive_only"
+            android:title="@string/pref_title_passive_only" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_fused"
+            android:summary="@string/pref_description_fused"
+            android:title="@string/pref_title_fused" />
+
+        <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+             dismiss it. -->
+        <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+        <ListPreference
+            android:defaultValue="3"
+            android:entries="@array/pref_fused_priority_titles"
+            android:entryValues="@array/pref_fused_priority_values"
+            android:key="@string/pref_key_fused_priority"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_fused_priority" />
+
+        <Preference android:title="@string/pref_view_providers"
+            android:key="@string/pref_key_view_providers" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_key_interval_catg"
+        android:title="@string/pref_interval_catg">
+        <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+        <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+        <EditTextPreference
+            android:defaultValue="@string/pref_interval_default"
+            android:inputType="number"
+            android:key="@string/pref_key_interval"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_interval" />
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_interval_fused_default"
+            android:inputType="number"
+            android:key="@string/pref_key_fused_interval"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_fused_interval" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
