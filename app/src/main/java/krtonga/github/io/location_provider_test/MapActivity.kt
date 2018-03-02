@@ -1,12 +1,10 @@
 package krtonga.github.io.location_provider_test
 
-import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.annotation.ColorRes
@@ -29,10 +27,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_map.*
 import krtonga.github.io.location_provider_test.location.LocationTracker
-import krtonga.github.io.location_provider_test.location.LocationTracker.Companion.GPS_ONLY
-import krtonga.github.io.location_provider_test.location.LocationTracker.Companion.NETWORK_ONLY
-import krtonga.github.io.location_provider_test.location.LocationTracker.Companion.PASSIVE_ONLY
-import krtonga.github.io.location_provider_test.settings.SettingsActivity
+import krtonga.github.io.location_provider_test.settings.SettingsHelper
 import timber.log.Timber
 
 
@@ -40,7 +35,8 @@ class MapActivity : AbstractMapActivity() {
 
     val locationTracker = LocationTracker()
 
-    val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
+    val settingsHelper by lazy {  SettingsHelper(
+            PreferenceManager.getDefaultSharedPreferences(this), resources) }
 
     var disposables = CompositeDisposable()
 
@@ -70,7 +66,7 @@ class MapActivity : AbstractMapActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> startSettingsActivity()
+            R.id.action_settings -> settingsHelper.startSettingsActivity(this)
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -85,9 +81,8 @@ class MapActivity : AbstractMapActivity() {
     }
 
     override fun onMapReady(map: MapboxMap) {
-
         Timber.d("Map ready!")
-        map.setStyle(mapboxStyle())
+        map.setStyle(settingsHelper.mapboxStyle())
         LocationTracker.requestPermissions(this, onPermissionsGranted)
     }
 
@@ -99,33 +94,42 @@ class MapActivity : AbstractMapActivity() {
             disposables = CompositeDisposable()
 
 
-            val interval = updateInterval()
 
-            if (gpsProviderOn()) {
-                val gpsObservable = locationTracker.start(applicationContext, GPS_ONLY, interval)
-                subscribe(gpsObservable, LocationManager.GPS_PROVIDER)
+            for (track in locationTracker.startMany(applicationContext, settingsHelper)) {
+                watch(track.key, track.value)
             }
-
-            if (networkProviderOn()) {
-                val networkObservable = locationTracker.start(applicationContext, NETWORK_ONLY, interval)
-                subscribe(networkObservable, LocationManager.NETWORK_PROVIDER)
-            }
-
-            if (passiveProviderOn()) {
-                val passiveObservable = locationTracker.start(applicationContext, PASSIVE_ONLY, interval)
-                subscribe(passiveObservable, LocationManager.PASSIVE_PROVIDER)
-            }
-
-            if (fusedProviderOn()) {
-                val fusedObservable = locationTracker.start(applicationContext, fusedProviderPriority(), fusedUpdateInterval())
-                subscribe(fusedObservable, "fused")
-            }
+//
+//            val interval = updateInterval()
+//
+//
+//
+//            if (gpsProviderOn()) {
+//                val gpsObservable = locationTracker.start(applicationContext, GPS_ONLY, interval)
+//                watch(gpsObservable, LocationManager.GPS_PROVIDER)
+//            }
+//
+//            if (networkProviderOn()) {
+//                val networkObservable = locationTracker.start(applicationContext, NETWORK_ONLY, interval)
+//                watch(networkObservable, LocationManager.NETWORK_PROVIDER)
+//            }
+//
+//            if (passiveProviderOn()) {
+//                val passiveObservable = locationTracker.start(applicationContext, PASSIVE_ONLY, interval)
+//                watch(passiveObservable, LocationManager.PASSIVE_PROVIDER)
+//            }
+//
+//            if (fusedProviderOn()) {
+//                val fusedObservable = locationTracker.start(applicationContext, fusedProviderPriority(), fusedUpdateInterval())
+//                watch(fusedObservable, "fused")
+//            }
         } else {
             onMapReady(map)
         }
     }
 
-    private fun subscribe(observable: Observable<Location>, provider: String) {
+    private fun watch(@LocationTracker.Companion.Provider provider: Long,
+                      observable: Observable<Location>) {
+
         @ColorRes val color = getColorForProvider(provider)
         addKey(provider)
 
@@ -138,7 +142,8 @@ class MapActivity : AbstractMapActivity() {
 
                     val markerOptions = MarkerOptions()
                             .position(latLng)
-                            .title("Fused")
+                            .title(location.provider)
+                            .snippet("Provider:"+location.provider+" Acc:"+location.accuracy)
                             .icon(createMarker(color))
                     map.addMarker(markerOptions)
                 }
@@ -146,16 +151,16 @@ class MapActivity : AbstractMapActivity() {
     }
 
     @ColorRes
-    private fun getColorForProvider(provider: String): Int {
+    private fun getColorForProvider(@LocationTracker.Companion.Provider provider: Long): Int {
         return when (provider) {
-            LocationManager.NETWORK_PROVIDER -> R.color.network
-            LocationManager.GPS_PROVIDER -> R.color.gps
-            LocationManager.PASSIVE_PROVIDER -> R.color.passive
+            LocationTracker.GPS_ONLY -> R.color.gps
+            LocationTracker.NETWORK_ONLY -> R.color.network
+            LocationTracker.PASSIVE_ONLY -> R.color.passive
             else -> R.color.fused
         }
     }
 
-    private fun addKey(provider: String) {
+    private fun addKey(@LocationTracker.Companion.Provider provider: Long) {
         val params = LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -163,8 +168,9 @@ class MapActivity : AbstractMapActivity() {
         )
         val view = TextView(applicationContext)
         view.layoutParams = params
-        view.text = provider
-        view.setBackgroundColor(ContextCompat.getColor(applicationContext, getColorForProvider(provider)))
+        view.text = LocationTracker.getProviderName(provider)
+        view.setBackgroundColor(ContextCompat.getColor(
+                applicationContext, getColorForProvider(provider)))
 
         keyLayout.addView(view)
     }
@@ -182,46 +188,5 @@ class MapActivity : AbstractMapActivity() {
         canvas.drawBitmap(oldIcon, 0f, 0f, paint)
 
         return factory.fromBitmap(oldIcon)
-    }
-
-    // TODO Move Settings And Shared Pref Methods into Utility Class
-    private fun startSettingsActivity(): Boolean {
-        startActivity(Intent(this, SettingsActivity::class.java))
-        return true
-    }
-
-    private fun mapboxStyle(): String {
-        return sharedPreferences.getString(getString(R.string.pref_key_mapbox_style),
-                resources.getStringArray(R.array.pref_mapbox_style_values)[0])
-    }
-
-    private fun gpsProviderOn(): Boolean {
-        return sharedPreferences.getBoolean(getString(R.string.pref_key_gps_only), true)
-    }
-
-    private fun networkProviderOn(): Boolean {
-        return sharedPreferences.getBoolean(getString(R.string.pref_key_network_only), true)
-    }
-
-    private fun passiveProviderOn(): Boolean {
-        return sharedPreferences.getBoolean(getString(R.string.pref_key_passive_only), true)
-    }
-
-    private fun fusedProviderOn(): Boolean {
-        return sharedPreferences.getBoolean(getString(R.string.pref_key_fused), true)
-    }
-
-    private fun updateInterval(): Long {
-        return sharedPreferences.getString(getString(R.string.pref_key_interval),
-                getString(R.string.pref_interval_default)).toLong() * 1000
-    }
-
-    private fun fusedUpdateInterval(): Long {
-        return sharedPreferences.getString(getString(R.string.pref_key_fused_interval),
-                getString(R.string.pref_interval_default)).toLong() * 1000
-    }
-
-    private fun fusedProviderPriority(): Long {
-        return sharedPreferences.getString(getString(R.string.pref_key_fused_priority), "3").toLong()
     }
 }

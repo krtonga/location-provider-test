@@ -2,6 +2,7 @@ package krtonga.github.io.location_provider_test.location
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -15,6 +16,7 @@ import krtonga.github.io.location_provider_test.location.permissions.RxGpsPermis
 import timber.log.Timber
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationCallback
+import com.jakewharton.rxrelay2.BehaviorRelay
 
 /**
  * This attempts to put location logic in one place, and returns observables.
@@ -23,6 +25,13 @@ import com.google.android.gms.location.LocationCallback
  * For more info see: https://developer.android.com/training/location/index.html
  */
 class LocationTracker {
+
+    /**
+     * This can be subscribed to to get the latest location from any provider
+     */
+    val locationsRelay: BehaviorRelay<Location> = BehaviorRelay.create()
+    val latestLocation = locationsRelay.hide()
+
     companion object {
         const val REQUEST_CHECK_FOR_GPS: Int = 0
         const val DEFAULT_INTERVAL: Long = 5000
@@ -51,6 +60,46 @@ class LocationTracker {
         const val FUSED_BALANCED_POWER_ACCURACY = 4L
         const val FUSED_LOW_POWER = 5L
         const val FUSED_NO_POWER = 6L
+
+        fun getProviderName(@Provider provider: Long) : String {
+            when (provider) {
+                GPS_ONLY -> return "GPS"
+                NETWORK_ONLY -> return "NETWORK"
+                PASSIVE_ONLY -> return "FUSED"
+                FUSED_HIGH_ACCURACY -> return "FUSED - high accuracy"
+                FUSED_BALANCED_POWER_ACCURACY -> return "FUSED - balanced power"
+                FUSED_LOW_POWER -> return "FUSED - lower power"
+                FUSED_NO_POWER -> return "FUSED - no power"
+            }
+            return ""
+        }
+    }
+
+    /**
+     * Returns map of observables based on user settings. Each observable, when subscribed to,
+     * starts location updates.
+     */
+    fun startMany(context: Context, settings: LocationSettingsInterface)
+            : Map<Long, Observable<Location>> {
+
+        val map = HashMap<Long, Observable<Location>>()
+        if (settings.isGpsProviderEnabled()) {
+            map[GPS_ONLY] = start(context, GPS_ONLY, settings.getInterval())
+        }
+
+        if (settings.isNetworkProviderEnabled()) {
+            map[NETWORK_ONLY] = start(context, NETWORK_ONLY, settings.getInterval())
+        }
+
+        if (settings.isPassiveProviderEnabled()) {
+            map[PASSIVE_ONLY] = start(context, PASSIVE_ONLY, settings.getInterval())
+        }
+
+        if (settings.isFusedProviderEnabled()) {
+            val fused = settings.getFusedProviderPriority()
+            map[fused] = start(context, fused, settings.getFusedProviderInterval())
+        }
+        return map
     }
 
     /**
@@ -145,6 +194,7 @@ class LocationTracker {
                         override fun onLocationResult(locationResult: LocationResult?) {
                             for (location in locationResult!!.locations) {
                                 emitter.onNext(location)
+                                locationsRelay.accept(location)
                             }
                         }
                     })
@@ -169,6 +219,7 @@ class LocationTracker {
                         override fun onLocationChanged(location: Location?) {
                             if (location != null) {
                                 emitter.onNext(location)
+                                locationsRelay.accept(location)
                             }
                         }
 
