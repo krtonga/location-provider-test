@@ -26,13 +26,14 @@ import kotlinx.android.synthetic.main.activity_map.*
 import krtonga.github.io.location_provider_test.location.LocationTracker
 import krtonga.github.io.location_provider_test.settings.SettingsHelper
 import timber.log.Timber
-
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class MapActivity : AbstractMapActivity() {
 
-    val locationTracker = LocationTracker()
+    private val locationTracker = LocationTracker()
 
-    val settingsHelper by lazy {  SettingsHelper(
+    private val settingsHelper by lazy {  SettingsHelper(
             PreferenceManager.getDefaultSharedPreferences(this), resources) }
 
     var disposables = CompositeDisposable()
@@ -90,35 +91,9 @@ class MapActivity : AbstractMapActivity() {
             disposables.dispose()
             disposables = CompositeDisposable()
 
-
-
             for (track in locationTracker.startMany(applicationContext, settingsHelper)) {
                 watch(track.key, track.value)
             }
-//
-//            val interval = updateInterval()
-//
-//
-//
-//            if (gpsProviderOn()) {
-//                val gpsObservable = locationTracker.start(applicationContext, GPS_ONLY, interval)
-//                watch(gpsObservable, LocationManager.GPS_PROVIDER)
-//            }
-//
-//            if (networkProviderOn()) {
-//                val networkObservable = locationTracker.start(applicationContext, NETWORK_ONLY, interval)
-//                watch(networkObservable, LocationManager.NETWORK_PROVIDER)
-//            }
-//
-//            if (passiveProviderOn()) {
-//                val passiveObservable = locationTracker.start(applicationContext, PASSIVE_ONLY, interval)
-//                watch(passiveObservable, LocationManager.PASSIVE_PROVIDER)
-//            }
-//
-//            if (fusedProviderOn()) {
-//                val fusedObservable = locationTracker.start(applicationContext, fusedProviderPriority(), fusedUpdateInterval())
-//                watch(fusedObservable, "fused")
-//            }
         } else {
             onMapReady(map)
         }
@@ -137,10 +112,14 @@ class MapActivity : AbstractMapActivity() {
                         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20.0))
                     }
 
+                    val locationAccuracyFormat = DecimalFormat("#.##")
+                    locationAccuracyFormat.roundingMode = RoundingMode.CEILING
+
                     val markerOptions = MarkerOptions()
                             .position(latLng)
                             .title(location.provider)
-                            .snippet("Provider:"+location.provider+" Acc:"+location.accuracy)
+                            .snippet("Provider:"+location.provider+
+                                    " Accuracy:"+locationAccuracyFormat.format(location.accuracy)+"m")
                             .icon(createMarker(color))
                     map.addMarker(markerOptions)
                 }

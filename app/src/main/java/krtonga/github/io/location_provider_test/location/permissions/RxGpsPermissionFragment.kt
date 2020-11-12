@@ -54,7 +54,7 @@ class RxGpsPermissionFragment : Fragment() {
      * On subscribe, a GPS check and prompt (if necessary) is triggered.
      **/
     fun getGpsOnObservable(): Observable<Boolean> {
-        mTurnOnGps = Observable.create ({
+        mTurnOnGps = Observable.create {
             mSubscriber = it
             Timber.d("\n\nAttempting to turn on GPS...\n\n")
             val request = LocationRequest.create()
@@ -71,15 +71,15 @@ class RxGpsPermissionFragment : Fragment() {
             startGpsTask.addOnSuccessListener {
                 mSubscriber?.onNext(true)
             }.addOnFailureListener { e ->
-                        if (e is ResolvableApiException) {
-                            try {
-                                e.startResolutionForResult(activity, LocationTracker.REQUEST_CHECK_FOR_GPS)
-                            } catch (e: IntentSender.SendIntentException) {
-                                mSubscriber?.onNext(false)
-                            }
-                        }
+                if (e is ResolvableApiException) {
+                    try {
+                        e.startResolutionForResult(activity, LocationTracker.REQUEST_CHECK_FOR_GPS)
+                    } catch (e: IntentSender.SendIntentException) {
+                        mSubscriber?.onNext(false)
                     }
-        })
+                }
+            }
+        }
         return mTurnOnGps
     }
 

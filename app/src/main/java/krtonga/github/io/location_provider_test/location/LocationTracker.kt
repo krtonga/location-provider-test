@@ -186,7 +186,7 @@ class LocationTracker {
                                  interval: Long)
             : Observable<Location> {
 
-        return Observable.create({ emitter ->
+        return Observable.create { emitter ->
             startFusedLocationUpdates(context,
                     priority,
                     interval,
@@ -198,7 +198,7 @@ class LocationTracker {
                             }
                         }
                     })
-        })
+        }
     }
 
     /**
@@ -209,7 +209,7 @@ class LocationTracker {
                                            interval: Long)
             : Observable<Location> {
 
-        return Observable.create({ emitter ->
+        return Observable.create { emitter ->
             startOldLocationUpdates(context,
                     provider,
                     interval,
@@ -235,6 +235,6 @@ class LocationTracker {
                             // TODO: Throw error if necessary
                         }
                     })
-        })
+        }
     }
 }

@@ -49,7 +49,7 @@ class RxGpsPermissions(activity: Activity, gpsRequired: Boolean) {
     private fun request(activity: Activity, gpsRequired: Boolean) {
         RxPermissions(activity)
                 .request(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe({ granted ->
+                .subscribe { granted ->
                     if (granted) {
                         if (gpsRequired) {
                             val gpsObserver = mGpsPermissionsFragment.getGpsOnObservable()
@@ -61,7 +61,7 @@ class RxGpsPermissions(activity: Activity, gpsRequired: Boolean) {
                         request(activity, gpsRequired)
                         relay.accept(false)
                     }
-                })
+                }
     }
 
     private fun getRxPermissionsFragment(activity: Activity) : RxGpsPermissionFragment {

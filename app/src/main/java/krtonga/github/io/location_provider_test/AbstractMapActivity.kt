@@ -34,12 +34,11 @@ abstract class AbstractMapActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
-        mapView.getMapAsync({
+        mapView.getMapAsync {
             map = it
             System.out.print("Map ready in callback!")
             onMapReady(it)
-//            map.setStyle(getString(R.string.mapbox_style_light))
-        })
+        }
     }
 
     override fun onPause() {
