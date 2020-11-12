@@ -1,9 +1,6 @@
 package krtonga.github.io.location_provider_test
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.graphics.*
 import android.location.Location
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -178,15 +175,16 @@ class MapActivity : AbstractMapActivity() {
     private fun createMarker(@ColorRes color: Int): Icon {
         val factory = IconFactory.getInstance(this)
 
-        val oldIcon = factory.defaultMarker().bitmap.copy(null, true)
+        val originalBitmap = factory.defaultMarker().bitmap
+        val recoloredIcon = originalBitmap.copy(originalBitmap.config, true)
 
         val paint = Paint()
         val filter = PorterDuffColorFilter(
                 ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
         paint.colorFilter = filter
-        val canvas = Canvas(oldIcon)
-        canvas.drawBitmap(oldIcon, 0f, 0f, paint)
+        val canvas = Canvas(recoloredIcon)
+        canvas.drawBitmap(recoloredIcon, 0f, 0f, paint)
 
-        return factory.fromBitmap(oldIcon)
+        return factory.fromBitmap(recoloredIcon)
     }
 }
