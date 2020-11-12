@@ -27,7 +27,7 @@ class SettingsHelper(val sharedPreferences: SharedPreferences, val resources: Re
 
     override fun isNetworkProviderEnabled(): Boolean {
         return sharedPreferences.getBoolean(
-                resources.getString(R.string.pref_key_gps_only), true)
+                resources.getString(R.string.pref_key_network_only), true)
     }
 
     override fun isPassiveProviderEnabled(): Boolean {

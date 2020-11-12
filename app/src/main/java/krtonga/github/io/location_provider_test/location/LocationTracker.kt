@@ -61,11 +61,12 @@ class LocationTracker {
         const val FUSED_LOW_POWER = 5L
         const val FUSED_NO_POWER = 6L
 
+        // TODO: Remove hardcoded strings
         fun getProviderName(@Provider provider: Long) : String {
             when (provider) {
                 GPS_ONLY -> return "GPS"
                 NETWORK_ONLY -> return "NETWORK"
-                PASSIVE_ONLY -> return "FUSED"
+                PASSIVE_ONLY -> return "PASSIVE"
                 FUSED_HIGH_ACCURACY -> return "FUSED - high accuracy"
                 FUSED_BALANCED_POWER_ACCURACY -> return "FUSED - balanced power"
                 FUSED_LOW_POWER -> return "FUSED - lower power"
